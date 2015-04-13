@@ -2958,7 +2958,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
 
     		start = 1;
 
-    		MPI_Send(&start, sizeof(int), MPI_INT, k, 41, MPI_COMM_WORLD);
+    		MPI_Send(&start, 1, MPI_INT, k, 41, MPI_COMM_WORLD);
 
     		if(debug == 1) {
     			printf("MASTER : Habe an slave %d die STARTMESSAGE gesendet!\n", k);
@@ -3003,7 +3003,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
     				"den Slaves !!!\n");
     		}
 
-    		MPI_Recv(&slaverank, 2*sizeof(long), MPI_LONG, MPI_ANY_SOURCE,
+   		MPI_Recv(slaverank, 2, MPI_LONG, MPI_ANY_SOURCE,
     								42, MPI_COMM_WORLD, &status);
 
     		/* remove galfit debug files "fit.log" and "galfit.*" */
@@ -3049,7 +3049,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
 
 					// Send job to the slave
 
-					MPI_Send(&j, sizeof(long), MPI_LONG, slaverank[0], 43,
+					MPI_Send(&j, 1, MPI_LONG, slaverank[0], 43,
 							MPI_COMM_WORLD);
 
 					sent++;
@@ -3099,7 +3099,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
 
     		j = -1;
 
-    		MPI_Send(&j, sizeof(long), MPI_LONG, k, 43, MPI_COMM_WORLD);
+    		MPI_Send(&j, 1, MPI_LONG, k, 43, MPI_COMM_WORLD);
     	}
 
 		/* remove galfit debug files "fit.log" and "galfit.*" */
@@ -3129,7 +3129,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
 
     	// Receive a starting message from master when output table is ready
 
-		MPI_Recv(&start, sizeof(int), MPI_INT, 0, 41, MPI_COMM_WORLD, &status);
+		MPI_Recv(&start, 1, MPI_INT, 0, 41, MPI_COMM_WORLD, &status);
 
 		// SOLLTE HIER NOCH EIN if(start == 99) UM ALLES HERUM ??
 
@@ -3155,7 +3155,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
     		smsg[0] = rank;
     		smsg[1] = j;
 
-			MPI_Send(&smsg, 2*sizeof(long), MPI_LONG, 0, 42, MPI_COMM_WORLD);
+			MPI_Send(smsg, 2, MPI_LONG, 0, 42, MPI_COMM_WORLD);
 
 			if(debug == 1) {
 				printf("SLAVE %d: Habe meinen rank zurueckgesendet!\n", rank);
@@ -3166,7 +3166,7 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
 
 			MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-			MPI_Recv(&j, sizeof(long), MPI_LONG, 0, 43, MPI_COMM_WORLD, &status);
+			MPI_Recv(&j, 1, MPI_LONG, 0, 43, MPI_COMM_WORLD, &status);
 
 			stime2 = MPI_Wtime();
 
@@ -3558,10 +3558,10 @@ cpl_error_code run_galfit_parallel_NEW(cpl_parameterlist *gala_setup) {
     if(rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -7590,12 +7590,12 @@ cpl_error_code find_contribtargets_parallel(cpl_table *tab,
 
 			/* Send message to slave */
 
-			MPI_Send(&i, sizeof(long), MPI_LONG, slaveid, 1,
+			MPI_Send(&i, 1, MPI_LONG, slaveid, 1,
 					MPI_COMM_WORLD);
 
 			/* Receive rank and contrib target indices from slave */
 
-    		MPI_Recv(&slaverank, 3*sizeof(long), MPI_LONG, MPI_ANY_SOURCE,
+    		MPI_Recv(slaverank, 3, MPI_LONG, MPI_ANY_SOURCE,
     								2, MPI_COMM_WORLD, &status);
 
     		/* Prepare an array containing contributing targets */
@@ -7642,7 +7642,7 @@ cpl_error_code find_contribtargets_parallel(cpl_table *tab,
 
 			/* Receive job ID for MASTER (JOB TAG = 1) */
 
-			MPI_Recv(&k, sizeof(long), MPI_LONG, 0, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(&k, 1, MPI_LONG, 0, 1, MPI_COMM_WORLD, &status);
 
 			// Reset counting variable for contributing targets
 
@@ -7812,7 +7812,7 @@ cpl_error_code find_contribtargets_parallel(cpl_table *tab,
 				}
 			}
 
-			MPI_Send(&smsg, 3*sizeof(long), MPI_LONG, 0, 2, MPI_COMM_WORLD);
+			MPI_Send(smsg, 3, MPI_LONG, 0, 2, MPI_COMM_WORLD);
 		}
 	}
 
@@ -8006,7 +8006,7 @@ cpl_error_code run_bulge_disc_fitting(cpl_parameterlist *gala_setup) {
     				"den Slaves !!!\n");
     		}
 
-    		MPI_Recv(&slaverank, sizeof(int), MPI_INT, MPI_ANY_SOURCE,
+    		MPI_Recv(&slaverank, 1, MPI_INT, MPI_ANY_SOURCE,
     								51, MPI_COMM_WORLD, &status);
 
     		if(debug == 1) {
@@ -8020,7 +8020,7 @@ cpl_error_code run_bulge_disc_fitting(cpl_parameterlist *gala_setup) {
 				"job %ld an den Slave %d.\n\n\n", j, j, slaverank);
 
 
-			MPI_Send(&j, sizeof(long), MPI_INT, slaverank, 52,
+			MPI_Send(&j, 1, MPI_INT, slaverank, 52,
 					MPI_COMM_WORLD);
 
     	}
@@ -8038,7 +8038,7 @@ cpl_error_code run_bulge_disc_fitting(cpl_parameterlist *gala_setup) {
 			printf("\nMASTER : Send nun die ending message an den slave"
 					"%d.\n\n\n", k);
 
-    		MPI_Send(&j, sizeof(long), MPI_INT, k, 52, MPI_COMM_WORLD);
+    		MPI_Send(&j, 1, MPI_INT, k, 52, MPI_COMM_WORLD);
     	}
 
     /* Slave job */
@@ -8082,7 +8082,7 @@ cpl_error_code run_bulge_disc_fitting(cpl_parameterlist *gala_setup) {
 
     		/* Send a message to MASTER that slave needs a job */
 
-    		MPI_Send(&rank, sizeof(int), MPI_INT, 0, 51, MPI_COMM_WORLD);
+    		MPI_Send(&rank, 1, MPI_INT, 0, 51, MPI_COMM_WORLD);
 
     		if(debug == 1) {
     			printf("SLAVE %d: Habe meinen rank zurueckgesendet!\n", rank);
@@ -8093,7 +8093,7 @@ cpl_error_code run_bulge_disc_fitting(cpl_parameterlist *gala_setup) {
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    		MPI_Recv(&j, sizeof(long), MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&j, 1, MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -8180,10 +8180,10 @@ cpl_error_code run_bulge_disc_fitting(cpl_parameterlist *gala_setup) {
     if(rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -10814,7 +10814,7 @@ cpl_error_code run_3comp_fitting(cpl_parameterlist *gala_setup) {
     				"den Slaves !!!\n");
     		}
 
-    		MPI_Recv(&slaverank, sizeof(int), MPI_INT, MPI_ANY_SOURCE,
+    		MPI_Recv(&slaverank, 1, MPI_INT, MPI_ANY_SOURCE,
     								51, MPI_COMM_WORLD, &status);
 
     		if(debug == 1) {
@@ -10828,7 +10828,7 @@ cpl_error_code run_3comp_fitting(cpl_parameterlist *gala_setup) {
 				"job %ld an den Slave %d.\n\n\n", j, j, slaverank);
 
 
-			MPI_Send(&j, sizeof(long), MPI_INT, slaverank, 52,
+			MPI_Send(&j, 1, MPI_INT, slaverank, 52,
 					MPI_COMM_WORLD);
 
     	}
@@ -10846,7 +10846,7 @@ cpl_error_code run_3comp_fitting(cpl_parameterlist *gala_setup) {
 			printf("\nMASTER : Send nun die ending message an den slave"
 					"%d.\n\n\n", k);
 
-    		MPI_Send(&j, sizeof(long), MPI_INT, k, 52, MPI_COMM_WORLD);
+    		MPI_Send(&j, 1, MPI_INT, k, 52, MPI_COMM_WORLD);
     	}
 
     /* Slave job */
@@ -10890,7 +10890,7 @@ cpl_error_code run_3comp_fitting(cpl_parameterlist *gala_setup) {
 
     		/* Send a message to MASTER that slave needs a job */
 
-    		MPI_Send(&rank, sizeof(int), MPI_INT, 0, 51, MPI_COMM_WORLD);
+    		MPI_Send(&rank, 1, MPI_INT, 0, 51, MPI_COMM_WORLD);
 
     		if(debug == 1) {
     			printf("SLAVE %d: Habe meinen rank zurueckgesendet!\n", rank);
@@ -10901,7 +10901,7 @@ cpl_error_code run_3comp_fitting(cpl_parameterlist *gala_setup) {
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    		MPI_Recv(&j, sizeof(long), MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&j, 1, MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -10988,10 +10988,10 @@ cpl_error_code run_3comp_fitting(cpl_parameterlist *gala_setup) {
     if(rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -12032,7 +12032,7 @@ cpl_error_code run_4comp_fitting(cpl_parameterlist *gala_setup) {
     				"den Slaves !!!\n");
     		}
 
-    		MPI_Recv(&slaverank, sizeof(int), MPI_INT, MPI_ANY_SOURCE,
+    		MPI_Recv(&slaverank, 1, MPI_INT, MPI_ANY_SOURCE,
     								51, MPI_COMM_WORLD, &status);
 
 
@@ -12048,7 +12048,7 @@ cpl_error_code run_4comp_fitting(cpl_parameterlist *gala_setup) {
 				"job %ld an den Slave %d.\n\n\n", j, j, slaverank);
 
 
-			MPI_Send(&l, sizeof(long), MPI_INT, slaverank, 52,
+			MPI_Send(&l, 1, MPI_INT, slaverank, 52,
 					MPI_COMM_WORLD);
 
     	}
@@ -12066,7 +12066,7 @@ cpl_error_code run_4comp_fitting(cpl_parameterlist *gala_setup) {
 			printf("\nMASTER : Send nun die ending message an den slave"
 					"%d.\n\n\n", k);
 
-    		MPI_Send(&l, sizeof(long), MPI_INT, k, 52, MPI_COMM_WORLD);
+    		MPI_Send(&l, 1, MPI_INT, k, 52, MPI_COMM_WORLD);
     	}
 
     /* Slave job */
@@ -12110,7 +12110,7 @@ cpl_error_code run_4comp_fitting(cpl_parameterlist *gala_setup) {
 
     		/* Send a message to MASTER that slave needs a job */
 
-    		MPI_Send(&rank, sizeof(int), MPI_INT, 0, 51, MPI_COMM_WORLD);
+    		MPI_Send(&rank, 1, MPI_INT, 0, 51, MPI_COMM_WORLD);
 
     		if(debug == 1) {
     			printf("SLAVE %d: Habe meinen rank zurueckgesendet!\n", rank);
@@ -12121,7 +12121,7 @@ cpl_error_code run_4comp_fitting(cpl_parameterlist *gala_setup) {
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    		MPI_Recv(&j, sizeof(long), MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&j, 1, MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -12208,10 +12208,10 @@ cpl_error_code run_4comp_fitting(cpl_parameterlist *gala_setup) {
     if(rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -13263,7 +13263,7 @@ cpl_error_code run_5comp_fitting(cpl_parameterlist *gala_setup) {
     				"den Slaves !!!\n");
     		}
 
-    		MPI_Recv(&slaverank, sizeof(int), MPI_INT, MPI_ANY_SOURCE,
+    		MPI_Recv(&slaverank, 1, MPI_INT, MPI_ANY_SOURCE,
     								51, MPI_COMM_WORLD, &status);
 
     		if(debug == 1) {
@@ -13277,7 +13277,7 @@ cpl_error_code run_5comp_fitting(cpl_parameterlist *gala_setup) {
 				"job %ld an den Slave %d.\n\n\n", j, j, slaverank);
 
 
-			MPI_Send(&l, sizeof(long), MPI_INT, slaverank, 52,
+			MPI_Send(&l, 1, MPI_INT, slaverank, 52,
 					MPI_COMM_WORLD);
 
     	}
@@ -13295,7 +13295,7 @@ cpl_error_code run_5comp_fitting(cpl_parameterlist *gala_setup) {
 			printf("\nMASTER : Send nun die ending message an den slave"
 					"%d.\n\n\n", k);
 
-    		MPI_Send(&l, sizeof(long), MPI_INT, k, 52, MPI_COMM_WORLD);
+    		MPI_Send(&l, 1, MPI_INT, k, 52, MPI_COMM_WORLD);
     	}
 
     /* Slave job */
@@ -13339,7 +13339,7 @@ cpl_error_code run_5comp_fitting(cpl_parameterlist *gala_setup) {
 
     		/* Send a message to MASTER that slave needs a job */
 
-    		MPI_Send(&rank, sizeof(int), MPI_INT, 0, 51, MPI_COMM_WORLD);
+    		MPI_Send(&rank, 1, MPI_INT, 0, 51, MPI_COMM_WORLD);
 
     		if(debug == 1) {
     			printf("SLAVE %d: Habe meinen rank zurueckgesendet!\n", rank);
@@ -13350,7 +13350,7 @@ cpl_error_code run_5comp_fitting(cpl_parameterlist *gala_setup) {
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    		MPI_Recv(&j, sizeof(long), MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&j, 1, MPI_INT, 0, 52, MPI_COMM_WORLD, &status);
 
     		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -13437,10 +13437,10 @@ cpl_error_code run_5comp_fitting(cpl_parameterlist *gala_setup) {
     if(rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -14425,10 +14425,10 @@ cpl_error_code run_galfit_fourier_modes(cpl_parameterlist *gala_setup) {
     if(my_rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -14444,10 +14444,10 @@ cpl_error_code run_galfit_fourier_modes(cpl_parameterlist *gala_setup) {
     if(my_rank == 0) {
     	for(j = 1; j < numprocs; j++) {
     		synch = 1;
-    		MPI_Send(&synch, sizeof(int), MPI_INT, j, 25, MPI_COMM_WORLD);
+    		MPI_Send(&synch, 1, MPI_INT, j, 25, MPI_COMM_WORLD);
     	}
     } else {
-    		MPI_Recv(&synch, sizeof(int), MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&synch, 1, MPI_INT, 0, 25, MPI_COMM_WORLD, &status);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -14542,13 +14542,13 @@ cpl_error_code distribute_fourier_jobs(cpl_parameterlist *gala_setup) {
     	for(i = 0; i < nrow; i++) {
 
     		/* receive a meassge from a slave which needs a job */
-    		MPI_Recv(&slaverank, sizeof(int), MPI_INT, MPI_ANY_SOURCE,
+    		MPI_Recv(&slaverank, 1, MPI_INT, MPI_ANY_SOURCE,
 				11, MPI_COMM_WORLD, &status);
 
     		a = i;
 
 			/* send job ID to slave */
-    		MPI_Send(&a, sizeof(int), MPI_INT, slaverank, 22,
+    		MPI_Send(&a, 1, MPI_INT, slaverank, 22,
 					MPI_COMM_WORLD);
     	}
 
@@ -14559,7 +14559,7 @@ cpl_error_code distribute_fourier_jobs(cpl_parameterlist *gala_setup) {
     		idx = -1;
 
 			/* send job ID to slave */
-    		MPI_Send(&idx, sizeof(int), MPI_INT, k, 22,
+    		MPI_Send(&idx, 1, MPI_INT, k, 22,
 					MPI_COMM_WORLD);
     	}
 
@@ -14570,10 +14570,10 @@ cpl_error_code distribute_fourier_jobs(cpl_parameterlist *gala_setup) {
 		while(j != -1) {
 
 			/* send a message to MASTER that a job is needed */
-			MPI_Send(&my_rank, sizeof(int), MPI_INT, 0, 11, MPI_COMM_WORLD);
+			MPI_Send(&my_rank, 1, MPI_INT, 0, 11, MPI_COMM_WORLD);
 
 			/* receive job ID from MASTER */
-			MPI_Recv(&j, sizeof(int), MPI_INT, 0, 22, MPI_COMM_WORLD, &status);
+			MPI_Recv(&j, 1, MPI_INT, 0, 22, MPI_COMM_WORLD, &status);
 
 			if(j != -1) {
 
